@@ -20,7 +20,7 @@ static volatile char rxdat[ RX_SZ ];
 static volatile unsigned char txhead, txtail;
 static volatile unsigned char rxhead, rxtail;
 
-// transmitter register is empty
+// UART transmitted interruppt
 ISR( USART_UDRE_vect ) {
     // transmit buffer is empty
     if ( txhead == txtail ) {
@@ -33,7 +33,7 @@ ISR( USART_UDRE_vect ) {
     txtail = ( txtail + 1 ) & TX_MSK;
 }
 
-// receiver register data available
+// UART received interrupt
 ISR( USART_RX_vect ) {
     unsigned char head;
     head = ( rxhead + 1 ) & RX_MSK;
@@ -58,7 +58,7 @@ void uart_init( ) {
     UCSR0C =
         _BV( UCSZ00 ) | // uart0 8 data bit, 1 stop bit
         _BV( UCSZ01 );
-    // initialize cursors
+    // initialize circular buffer cursors
     txhead = 0;
     txtail = 0;
     rxhead = 0;
